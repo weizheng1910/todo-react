@@ -2,79 +2,63 @@ import React from 'react';
 import Moment from 'react-moment';
 import 'moment-timezone';
 
+
+import $ from 'jquery';
+import Popper from 'popper.js'
+
+import Board from './board'
+import Form from './form'
+import ToDoItem from './todoitem'
 import { hot } from 'react-hot-loader';
 
-class Form extends React.Component {
+class App extends React.Component {
   constructor(){
-    super();
+    super()
     this.state = {
-      input: "",
-      list:[],
-      validation: true
+      boards: [],
+      input: ""
     }
   }
 
-  getInput(currentInput){
+  renderInput(currentInput){
     console.log(currentInput)
-    this.setState({input: currentInput})
+    this.setState({input:currentInput})
   }
 
-  submitInput(){
-    if (this.state.input.length < 4 || this.state.input.contains){
-      this.setState({validation:false})
-    } else {
-      this.state.list.push(this.state.input)   
-      this.setState({input: "", list: this.state.list, validation: true})
-    }
-  }
-
-  deleteList(index){
-    this.state.list.splice(index,1)
-    this.setState({list: this.state.list})
+  addBoard(){
+    this.state.boards.push(this.state.input)
+    this.setState({boards: this.state.boards,input:""})
   }
 
   render() {
-    var list = this.state.list.map((item,index) => { 
-      return <tr>
-        <td>{index + 1}. {item}</td>
-        <td><Moment format="YYYY-MM-DD HH:mm">{Date.now()}</Moment></td>
-        <td><button type="button" onClick={(evt) => this.deleteList(index)}>Delete Task</button></td>
-        </tr>
+
+    const deleteBoard = (index) => {
+      this.state.boards.splice(index,1)
+      this.setState({boards:this.state.boards})
+    }
+
+    var boards = this.state.boards.map((board,index) => {
+      return <Board name={board} index={index} deleteBoard={deleteBoard}/>
     })
 
-    var errorAlert;
-
-    if(!this.state.validation){
-      errorAlert = "Please key in more than 4 letters"
-    }
-    
     return (
       <div>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Task </th>
-              <th>Time Created</th>
-              <th>Delete?</th>
-            </tr>
-          </thead>
-          <tbody>
-            {list}
-          </tbody>
-        </table>
-        <input type="text" onChange={(evt) => this.getInput(evt.target.value)} value={this.state.input}/>
-        <span class="text-warning">{errorAlert}</span>
-        <button type="button" onClick={(evt) => this.submitInput()}>Submit To Do</button>
-      </div>
-    );
-  }
-}
-
-class App extends React.Component {
-  render() {
-    return (
-      <div>
-        <Form/>
+        <div className="btn-group dropdown p-0">
+          <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Add New Task
+          </button>
+          <div className="dropdown-menu" style={{padding: 0 + 'px', margin: (0 + 'px') }}>
+              <div className="d-flex justify-content-center ">
+              <input style={{width: 210 + 'px',border: '0px solid'}}  type="text" onChange={(evt) => this.renderInput(evt.target.value)} value={this.state.input}/>
+              <div>
+              <button onClick={(evt) => {this.addBoard(this.state.input)}} >Add Board</button>
+              </div>
+              </div>
+          </div>
+        </div>
+        <div className="d-flex justify-content-around">
+          {boards}
+        </div>
       </div>
     );
   }
