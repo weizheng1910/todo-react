@@ -1,7 +1,10 @@
 import React from 'react';
+import ReactDOM from 'react-dom'
+
 import Moment from 'react-moment';
 import 'moment-timezone';
 
+import PortalDemo from 'portal';
 
 import $ from 'jquery';
 import Popper from 'popper.js'
@@ -16,7 +19,8 @@ class App extends React.Component {
     super()
     this.state = {
       boards: [],
-      input: ""
+      input: "",
+      showModal: false
     }
   }
 
@@ -37,12 +41,19 @@ class App extends React.Component {
       this.setState({boards:this.state.boards})
     }
 
+    const handleShowMessageClick = () => {this.setState({showModal: true})}
+    const handleCloseModal = () => {this.setState({showModal: false})}
+
     var boards = this.state.boards.map((board,index) => {
       return <Board name={board} index={index} deleteBoard={deleteBoard}/>
     })
 
     return (
       <div>
+        <button onClick={handleShowMessageClick}>
+          Show Secret Modal
+        </button>
+        {this.state.showModal ? (<PortalDemo onClose={handleCloseModal}> YoYo</PortalDemo>) : null}
         <div className="btn-group dropdown p-0">
           <button type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Add New Task
